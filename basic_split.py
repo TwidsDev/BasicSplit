@@ -8,11 +8,12 @@ import os
 class TimerApp:
     def __init__(self, master):
         self.master = master
-        self.master.title("BasicSplit")
+        self.master.title("Timer with Milliseconds")
 
         self.is_running = False
         self.start_time = None
         self.split_times = []
+        self.loaded_split_file = None  # Added variable to keep track of loaded split file
 
         # Initialize entry widgets as None
         self.start_entry = None
@@ -245,10 +246,9 @@ class TimerApp:
         self.split_listbox.delete(0, tk.END)
         for i, split_time in enumerate(self.split_times, start=1):
             formatted_split_time = self.format_time(split_time)
-            color = 'green' if i == 1 or split_time < self.split_times[i - 2] else 'red'
+            color = 'green' if self.loaded_split_file and i <= len(self.loaded_split_file) and split_time < self.loaded_split_file[i-1] else 'red'
             self.split_listbox.insert(tk.END, f"Split {i}: {formatted_split_time}")
             self.split_listbox.itemconfig(tk.END, {'fg': color})
-
 
     def new_splits(self):
         result = messagebox.askyesno("New Splits", "Do you want to start a new set of splits?")
@@ -265,11 +265,9 @@ class TimerApp:
         file_path = filedialog.askopenfilename(filetypes=[("Split files", "*.split")])
         if file_path:
             with open(file_path, "rb") as file:
-                saved_splits = pickle.load(file)
-                if saved_splits == self.split_times:
-                    messagebox.showinfo("Comparison Result", "The splits match!")
-                else:
-                    messagebox.showinfo("Comparison Result", "The splits do not match.")
+                self.loaded_split_file = pickle.load(file)
+                self.update_split_list()
+                messagebox.showinfo("Comparison Result", "Splits loaded for comparison.")
 
     def close_app(self):
         self.master.destroy()
