@@ -245,7 +245,10 @@ class TimerApp:
         self.split_listbox.delete(0, tk.END)
         for i, split_time in enumerate(self.split_times, start=1):
             formatted_split_time = self.format_time(split_time)
+            color = 'green' if i == 1 or split_time < self.split_times[i - 2] else 'red'
             self.split_listbox.insert(tk.END, f"Split {i}: {formatted_split_time}")
+            self.split_listbox.itemconfig(tk.END, {'fg': color})
+
 
     def new_splits(self):
         result = messagebox.askyesno("New Splits", "Do you want to start a new set of splits?")
