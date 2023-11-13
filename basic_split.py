@@ -8,7 +8,7 @@ import os
 class TimerApp:
     def __init__(self, master):
         self.master = master
-        self.master.title("Timer with Milliseconds")
+        self.master.title("BasicSplit")
 
         self.is_running = False
         self.start_time = None
