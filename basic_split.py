@@ -9,6 +9,7 @@ class TimerApp:
     def __init__(self, master):
         self.master = master
         self.master.title("BasicSplit")
+        self.master.resizable(False, False)  # Disable maximize button, enable minimize button
 
         self.is_running = False
         self.start_time = None
@@ -114,6 +115,7 @@ class TimerApp:
     def open_settings(self):
         settings_window = tk.Toplevel(self.master)
         settings_window.title("Settings")
+        settings_window.wm_attributes('-topmost', True)  # Keep settings window on top
 
         start_label = tk.Label(settings_window, text="Start Hotkey:")
         start_label.grid(row=0, column=0, sticky=tk.E, padx=10, pady=5)
@@ -150,8 +152,11 @@ class TimerApp:
         self.background_entry.grid(row=5, column=1, padx=10, pady=5)
         self.background_entry.bind("<Button-1>", self.pick_color)
 
-        save_button = tk.Button(settings_window, text="Save", command=self.save_settings)
-        save_button.grid(row=6, column=0, columnspan=2, pady=10)
+        save_button = tk.Button(settings_window, text="Save", command=lambda: self.save_settings(settings_window))
+        save_button.grid(row=6, column=0, pady=10, sticky=tk.E)
+
+        cancel_button = tk.Button(settings_window, text="Cancel", command=settings_window.destroy)
+        cancel_button.grid(row=6, column=1, pady=10, sticky=tk.W)
 
         # Set initial values based on config
         self.start_entry.insert(0, self.config.get('Settings', 'StartHotkey'))
@@ -161,7 +166,7 @@ class TimerApp:
         always_on_top_var.set(self.config.getboolean('Settings', 'AlwaysOnTop'))
         self.background_entry.insert(0, self.config.get('Settings', 'BackgroundColor'))
 
-    def save_settings(self):
+    def save_settings(self, settings_window):
         # Save hotkeys to the config file
         self.config.set('Settings', 'StartHotkey', self.start_entry.get())
         self.config.set('Settings', 'StopHotkey', self.stop_entry.get())
@@ -169,8 +174,8 @@ class TimerApp:
         self.config.set('Settings', 'SplitHotkey', self.split_entry.get())
 
         # Save Always On Top setting
-        always_on_top_var = self.master.attributes('-topmost')
-        self.config.set('Settings', 'AlwaysOnTop', 'yes' if always_on_top_var else 'no')
+        always_on_top_value = 'yes' if self.master.attributes('-topmost') else 'no'
+        self.config.set('Settings', 'AlwaysOnTop', always_on_top_value)
 
         # Save Background Color setting
         self.config.set('Settings', 'BackgroundColor', self.background_entry.get())
@@ -181,8 +186,14 @@ class TimerApp:
         # Save the updated config to the file
         self.save_config()
 
+        # Close the settings window
+        settings_window.destroy()
+
+
     def toggle_always_on_top(self, always_on_top_var):
+        always_on_top_value = 'yes' if always_on_top_var.get() else 'no'
         self.master.attributes("-topmost", always_on_top_var.get())
+        self.config.set('Settings', 'AlwaysOnTop', always_on_top_value)
 
     def bind_hotkey(self, event, entry_widget, setting_name):
         entry_widget.delete(0, tk.END)
