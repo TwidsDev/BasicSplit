@@ -58,8 +58,8 @@ class TimerApp:
                 'StopHotkey': 'x',
                 'ResetHotkey': 'r',
                 'SplitHotkey': 'space',
-                'AlwaysOnTop': 'no',
-                'BackgroundColor': '#ffffff'
+                'AlwaysOnTop': 'yes',
+                'BackgroundColor': ''
             }
             with open('config.ini', 'w') as configfile:
                 self.config.write(configfile)
