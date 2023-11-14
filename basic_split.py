@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox, filedialog, colorchooser
+from tkinter import messagebox, filedialog, colorchooser, PhotoImage
 import time
 import pickle
 import configparser
@@ -43,10 +43,20 @@ class TimerApp:
         self.compare_button = tk.Button(master, text="Compare", command=self.compare_splits)
         self.compare_button.pack(side=tk.TOP, fill=tk.X, padx=20, pady=5)
 
+        # Create an icon if it exists (you can replace 'icon.png' with the path to your icon file)
+        try:
+            self.icon = PhotoImage(file='icon.png')
+        except tk.TclError:
+            # Handle the case where the icon file is not found or not a valid image
+            self.icon = None
         self.create_menu()
 
         # Apply settings on window creation
         self.apply_settings()
+
+    def open_link(self, url):
+        import webbrowser
+        webbrowser.open(url)
 
     def load_config(self):
         self.config = configparser.ConfigParser()
@@ -104,6 +114,8 @@ class TimerApp:
 
         file_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="About", command=self.show_about_window)
+        file_menu.add_separator()
         file_menu.add_command(label="New", command=self.new_splits)
         file_menu.add_command(label="Save", command=self.save_splits)
         file_menu.add_command(label="Compare", command=self.compare_splits)
@@ -111,6 +123,40 @@ class TimerApp:
         file_menu.add_command(label="Settings", command=self.open_settings)
         file_menu.add_separator()
         file_menu.add_command(label="Close", command=self.close_app)
+
+    def show_about_window(self):
+        about_window = tk.Toplevel(self.master)
+        about_window.title("About BasicSplit")
+
+        # Set window attributes for macOS
+        about_window.attributes('-topmost', True)
+
+        # Set icon if it exists
+        if hasattr(self, 'icon') and self.icon:
+            about_window.iconphoto(True, self.icon)
+
+        # Create and place widgets in the about window
+        if hasattr(self, 'icon') and self.icon:
+            icon_label = tk.Label(about_window, image=self.icon)
+            icon_label.grid(row=0, column=0, padx=10, pady=10, rowspan=3)
+
+        title_label = tk.Label(about_window, text="BasicSplit", font=("Helvetica", 16, "bold"))
+        title_label.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
+
+        version_label = tk.Label(about_window, text="Version 0.1")
+        version_label.grid(row=1, column=1, padx=10, pady=5, sticky=tk.W)
+
+        about_text = "This is a simple time splitting application created with Python to be cross platform.\n\n" \
+        "This is an open source project by "
+        about_label = tk.Label(about_window, text=about_text, wraplength=300, justify=tk.LEFT)
+        about_label.grid(row=2, column=1, padx=10, pady=5, sticky=tk.W)
+        twids_link = tk.Label(about_window, text="@TwidsDev", fg="blue", cursor="hand2")
+        twids_link.grid(row=3, column=1, padx=10, pady=5, sticky=tk.W)
+        twids_link.bind("<Button-1>", lambda e: self.open_link("https://twitter.com/TwidsDev"))
+        github_link = tk.Label(about_window, text="GitHub", fg="blue", cursor="hand2")
+        github_link.grid(row=3, column=2, padx=10, pady=5, sticky=tk.W)
+        github_link.bind("<Button-1>", lambda e: self.open_link("https://github.com/TwidsDev/BasicSplit/"))
+
 
     def open_settings(self):
         settings_window = tk.Toplevel(self.master)
