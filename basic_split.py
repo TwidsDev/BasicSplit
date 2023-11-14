@@ -4,6 +4,7 @@ import time
 import pickle
 import configparser
 import os
+import platform  # Added platform module
 
 class TimerApp:
     def __init__(self, master):
@@ -49,6 +50,13 @@ class TimerApp:
         except tk.TclError:
             # Handle the case where the icon file is not found or not a valid image
             self.icon = None
+
+        # Check the operating system
+        self.is_macos = platform.system() == 'Darwin'
+        self.is_windows = platform.system() == 'Windows'
+        self.is_linux = platform.system() == 'Linux'
+        self.version_num = 0.1
+
         self.create_menu()
 
         # Apply settings on window creation
@@ -143,7 +151,8 @@ class TimerApp:
         title_label = tk.Label(about_window, text="BasicSplit", font=("Helvetica", 16, "bold"))
         title_label.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
 
-        version_label = tk.Label(about_window, text="Version 0.1")
+        version_label_text = f"Version {self.version_num} (OS: {platform.system()})"
+        version_label = tk.Label(about_window, text=version_label_text)
         version_label.grid(row=1, column=1, padx=10, pady=5, sticky=tk.W)
 
         about_text = "This is a simple time splitting application created with Python to be cross platform.\n\n" \
