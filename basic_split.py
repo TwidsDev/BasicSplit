@@ -9,7 +9,8 @@ import platform  # Added platform module
 class TimerApp:
     def __init__(self, master):
         self.master = master
-        self.master.title("BasicSplit")
+        self.version_num = 0.1
+        self.master.title(f"BasicSplit - {self.version_num}")
         self.master.resizable(False, False)  # Disable maximize button, enable minimize button
 
         self.is_running = False
@@ -55,7 +56,6 @@ class TimerApp:
         self.is_macos = platform.system() == 'Darwin'
         self.is_windows = platform.system() == 'Windows'
         self.is_linux = platform.system() == 'Linux'
-        self.version_num = 0.1
 
         self.create_menu()
 
