@@ -25,7 +25,7 @@ class TimerApp:
 
         self.load_config()  # Load the settings from the config file
 
-        self.label = tk.Label(master, text="0:00.0", font=("Helvetica", 36))
+        self.label = tk.Label(master, text="0:00.00", font=("Helvetica", 36))
         self.label.pack(pady=10)
 
         self.split_listbox = tk.Listbox(master, height=5, selectmode=tk.BROWSE)
@@ -276,7 +276,7 @@ class TimerApp:
 
     def reset_timer(self):
         self.is_running = False
-        self.label.config(text="0:00.0")
+        self.label.config(text="0:00.00")
         self.split_times = []
         self.update_split_list()
 
@@ -296,8 +296,8 @@ class TimerApp:
     def format_time(self, elapsed_time):
         minutes = int(elapsed_time // 60)
         seconds = int(elapsed_time % 60)
-        milliseconds = int((elapsed_time % 1) * 10)
-        return f"{minutes}:{seconds:02}.{milliseconds}"
+        milliseconds = int((elapsed_time % 1) * 100)
+        return f"{minutes}:{seconds:02}.{milliseconds:02}"
 
     def update_split_list(self):
         self.split_listbox.delete(0, tk.END)
