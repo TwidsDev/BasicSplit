@@ -11,7 +11,7 @@ class TimerApp:
         self.master = master
         self.version_num = 0.1
         self.master.title(f"BasicSplit - {self.version_num}")
-        self.master.resizable(False, False)  # Disable maximize button, enable minimize button
+        #self.master.resizable(False, False)  # Disable maximize button, enable minimize button
 
         self.is_running = False
         self.start_time = None
@@ -30,7 +30,7 @@ class TimerApp:
         self.label = tk.Label(master, text="0:00.00", font=("Helvetica", 36))
         self.label.pack(pady=10)
 
-        self.split_listbox = tk.Listbox(master, height=5, selectmode=tk.BROWSE)
+        self.split_listbox = tk.Listbox(master, height=5, width=40, selectmode=tk.BROWSE)
         self.split_listbox.pack(pady=10)
 
         self.start_stop_button = tk.Button(master, text="Start", command=self.toggle_timer)
@@ -310,11 +310,21 @@ class TimerApp:
 
     def update_split_list(self):
         self.split_listbox.delete(0, tk.END)
-        for i, split_time in enumerate(self.split_times, start=1):
-            formatted_split_time = self.format_time(split_time)
-            color = 'green' if self.loaded_split_file and i <= len(self.loaded_split_file) and split_time < self.loaded_split_file[i-1] else 'red'
-            self.split_listbox.insert(tk.END, f"Split {i}: {formatted_split_time}")
-            self.split_listbox.itemconfig(tk.END, {'fg': color})
+        
+        if self.loaded_split_file:
+            for i, (split_time, loaded_time) in enumerate(zip(self.split_times, self.loaded_split_file), start=1):
+                formatted_split_time = self.format_time(split_time)
+                formatted_loaded_time = self.format_time(loaded_time)
+                comparison_text = f"Past Split {i}: {formatted_loaded_time} - Current Split {i}: {formatted_split_time}"
+                color = 'green' if split_time < loaded_time else 'red'
+                self.split_listbox.insert(tk.END, comparison_text)
+                self.split_listbox.itemconfig(tk.END, {'fg': color})
+        else:
+            # Display the splits without comparison
+            for i, split_time in enumerate(self.split_times, start=1):
+                formatted_split_time = self.format_time(split_time)
+                self.split_listbox.insert(tk.END, f"Split {i}: {formatted_split_time}")
+
 
     def new_splits(self):
         result = messagebox.askyesno("New Splits", "Do you want to start a new set of splits?")
